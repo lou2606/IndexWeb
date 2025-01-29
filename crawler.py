@@ -5,10 +5,24 @@ from urllib.parse import urljoin
 from urllib.robotparser import RobotFileParser
 from queue import PriorityQueue
 from itertools import count
+from urllib.parse import urlparse
 
 
 
 class WebCrawler:
+
+    @staticmethod
+    def get_base_url(url):
+        """
+        Extrait l'URL de base pour une URL donnée.
+        Exemple:
+            Pour l'entrée: "https://web-scraping.dev/products"
+            La sortie sera: "https://web-scraping.dev"
+        """
+        parsed_url = urlparse(url)
+        base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        return base_url
+
     def __init__(self, base_url, max_depth=2, max_pages=50, delay=1):
         """
         Initialise le crawler web.
@@ -18,6 +32,7 @@ class WebCrawler:
         :param delay: Temps (en secondes) entre chaque requête pour respecter les serveurs (politesse)
         """
         self.base_url = base_url
+        self.base_base_url = self.get_base_url(base_url)
         self.max_depth = max_depth
         self.max_pages = max_pages
         self.delay = delay
@@ -34,6 +49,8 @@ class WebCrawler:
         # File de priorité pour stocker les URL à visiter
         self.queue = PriorityQueue()
         self.queue.put((0, next(self.counter),base_url, 0))
+
+
 
     def fetch_url(self, url):
         """Récupère le contenu HTML d'une URL donnée."""
@@ -58,7 +75,7 @@ class WebCrawler:
         links = set()
         for anchor in soup.find_all('a', href=True):
             link = urljoin(current_url, anchor['href'])
-            if link.startswith(self.base_url) or "product" in link:  # Filtre les liens hors domaine
+            if link.startswith(self.base_base_url) or "product" in link:  # Filtre les liens hors domaine
                 links.add(link)
         return links
 
