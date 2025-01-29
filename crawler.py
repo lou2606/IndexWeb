@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from urllib.robotparser import RobotFileParser
 from queue import PriorityQueue
+from itertools import count
+
 
 
 class WebCrawler:
@@ -22,6 +24,7 @@ class WebCrawler:
         self.visited = set()
         self.results = []
         self.pages_visited_count = 0  # Compteur du nombre total de pages visitées
+        self.counter = count()
 
         # Initialisation du parser pour robots.txt
         self.robot_parser = RobotFileParser()
@@ -30,7 +33,7 @@ class WebCrawler:
 
         # File de priorité pour stocker les URL à visiter
         self.queue = PriorityQueue()
-        self.queue.put((0, base_url, 0))
+        self.queue.put((0, next(self.counter),base_url, 0))
 
     def fetch_url(self, url):
         """Récupère le contenu HTML d'une URL donnée."""
@@ -55,7 +58,7 @@ class WebCrawler:
         links = set()
         for anchor in soup.find_all('a', href=True):
             link = urljoin(current_url, anchor['href'])
-            if link.startswith(self.base_url):  # Filtre les liens hors domaine
+            if link.startswith(self.base_url) or "product" in link:  # Filtre les liens hors domaine
                 links.add(link)
         return links
 
@@ -65,7 +68,7 @@ class WebCrawler:
             if self._has_reached_max_pages():
                 break
 
-            _, url, depth = self.queue.get()
+            _, _,url, depth = self.queue.get()
 
             if not self._should_crawl_url(url, depth):
                 continue
@@ -114,7 +117,7 @@ class WebCrawler:
         for link in links:
             if link not in self.visited:
                 priority = -1 if "product" in link else 1
-                self.queue.put((priority, link, depth + 1))
+                self.queue.put((priority, next(self.counter), link, depth + 1))
 
     def process_page(self, html, url):
         """Analyse une page et sauvegarde les résultats."""

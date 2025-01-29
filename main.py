@@ -10,7 +10,7 @@ def main():
     crawler.crawl()
 
 
-    with open("../results.json", "w", encoding="utf-8") as json_file:
+    with open("results.json", "w", encoding="utf-8") as json_file:
         json.dump(crawler.results, json_file, indent=4, ensure_ascii=False)
 
     print("Résultats sauvegardés dans 'results.json'")
