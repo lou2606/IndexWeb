@@ -153,8 +153,7 @@ class Index:
         for key_feature, tokens_dict in self.index_features.items():
             sub_index_name = f"index_{key_feature}"
             setattr(self, sub_index_name, tokens_dict)
-            if sub_index_name == "index_purpose":
-                print(f"created sub index {tokens_dict}")
+
 
     def build_index_position(self):
         """
