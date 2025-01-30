@@ -171,9 +171,9 @@ class Index:
             current_position = 0
             for token in title_tokens:
                 current_position = title.lower().find(token, current_position)
-                if current_position != -1:
-                    title_positions[token] = current_position
-                    current_position += len(token)
+
+                title_positions[token] = current_position
+                current_position += len(token)
 
             for token, position in title_positions.items():
                 self.index_position_title[token].add((doc_id, position))
@@ -182,9 +182,9 @@ class Index:
             current_position = 0
             for token in description_tokens:
                 current_position = description.lower().find(token, current_position)
-                if current_position != -1:
-                    description_positions[token] = current_position
-                    current_position += len(token)
+
+                description_positions[token] = current_position
+                current_position += len(token)
 
             # Ajout des positions dans l'index pour la description
             for token, position in description_positions.items():
