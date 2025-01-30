@@ -251,6 +251,104 @@ Cela optimise la consultation des résultats et facilite l’intégration avec d
 
 ---
 
+## Fonctionnalités des requêtes
+
+Dans ce projet, plusieurs méthodes sont implémentées pour exécuter des requêtes sur des index préconstruits. Ces requêtes permettent de récupérer des documents (par exemple des produits extraits) en fonction de différents critères comme le titre, la description ou la région.
+
+### 1. **Requête sur le titre (`requete_title`)**
+
+- **Description** : Recherche et classe les documents en fonction de la ressemblance de leur titre avec la requête utilisateur.
+- **Entrée** : Une chaîne de texte représentant la requête.
+- **Sortie** : Un JSON contenant les métadonnées (nombre de résultats disponibles et analysés) et une liste triée des documents pertinents (top 5).
+- **Utilisation** : Idéal pour des recherches simples basées sur des mots-clés dans le titre.
+
+---
+
+### 2. **Requête sur la description (`requete_description`)**
+
+- **Description** : Semblable à `requete_title`, cette méthode s'applique aux descriptions des documents au lieu des titres.
+- **Entrée** : Une chaîne de texte représentant la requête.
+- **Sortie** : Un JSON contenant les métadonnées (nombre de résultats disponibles et analysés) et une liste triée des documents pertinents (top 5).
+- **Utilisation** : Recherchez des informations spécifiques ou du contexte dans les descriptions des documents.
+
+---
+
+### 3. **Requête sur le titre et la description (`requete_title_description`)**
+
+- **Description** : Combine les résultats des recherches dans les titres et les descriptions. Les scores sont pondérés de façon à donner un poids plus important au titre.
+- **Entrée** : Une chaîne de texte représentant la requête.
+- **Sortie** : Un JSON contenant les métadonnées (nombre de résultats disponibles et analysés) et une liste triée des documents pertinents (top 5).
+- **Différences** : Donne une vue holistique en incluant deux dimensions (titre et description) pour obtenir des résultats plus riches.
+
+---
+
+### 4. **Requête sur le titre et une région spécifique (`requete_title_region`)**
+
+- **Description** : Cette recherche s'applique aux titres, tout en filtrant les résultats par une région spécifique.
+- **Entrée** : 
+  - Une chaîne de texte (requête utilisateur),
+  - Une région (facultative) à filtrer,
+  - Des mots-clés obligatoires (facultatifs) à inclure dans le titre.
+- **Sortie** : Un JSON contenant les métadonnées et la liste des documents pertinents (top 5 après filtrage).
+- **Utilisation** : Cette requête est utile pour des applications géographiques où l'origine ou la région des documents est importante.
+
+---
+
+### 5. **Requête sur la description et une région spécifique (`requete_description_region`)**
+
+- **Description** : Recherche sur les descriptions des documents tout en filtrant les résultats par région.
+- **Entrée** :
+  - Une chaîne de texte (requête utilisateur),
+  - Une région (facultative) à filtrer,
+  - Des mots-clés obligatoires (facultatifs) à inclure dans la description.
+- **Sortie** : Un JSON contenant les métadonnées et la liste des documents pertinents (top 5 après filtrage).
+- **Différences** : Spécifique à la description avec filtrage par région.
+
+---
+
+### Différences majeures entre les requêtes
+
+| Fonction                  | Champ de recherche    | Gestion des régions | Prise en compte des mots obligatoires | Pondération des scores | Objectif principal                                                                |
+|---------------------------|-----------------------|---------------------|---------------------------------------|------------------------|-----------------------------------------------------------------------------------|
+| `requete_title`           | Titre                | Non                 | Non                                   | Non                    | Rechercher des mots-clés spécifiques dans les titres des documents               |
+| `requete_description`     | Description          | Non                 | Non                                   | Non                    | Extraire des informations plus contextuelles depuis les descriptions des documents|
+| `requete_title_description` | Titre et Description | Non                 | Non                                   | Oui (titre > description)| Obtenir des résultats pertinents en analysant à la fois titre et description     |
+| `requete_title_region`    | Titre                | Oui                 | Oui                                   | Non                    | Restreindre les résultats par région tout en intégrant des contraintes sur titre |
+| `requete_description_region` | Description        | Oui                 | Oui                                   | Non                    | Restreindre par région avec une recherche approfondie sur les descriptions      |
+
+---
+
+## Structure des réponses
+
+Toutes les requêtes retournent un JSON structuré de cette manière :
+
+```json
+{
+  "metadata": {
+    "nb_elements_apres_filtrage": 5,
+    "nb_elements_total": 100
+  },
+  "result": [
+    {
+      "url": "https://site.com/produit1",
+      "score": 3.5
+    },
+    {
+      "url": "https://site.com/produit2",
+      "score": 3.2
+    }
+  ]
+}
+```
+
+- **`metadata`** :
+  - `nb_elements_apres_filtrage` : Nombre de résultats retournés après le traitement.
+  - `nb_elements_total` : Nombre total de documents dans l'index concerné.
+- **`result`** :
+  - Contient une liste des URL des produits triés par score de pertinence.
+
+---
+
 
 ## Avertissement
 
