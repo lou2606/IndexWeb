@@ -51,22 +51,7 @@ pip install requests beautifulsoup4 pandas
 ## Utilisation
 ### Cas crawler
 
-fonction main : 
-```python
-def main():
-    base_url = "https://web-scraping.dev/products"
-    max_depth = 20
-
-
-    crawler = WebCrawler(base_url, max_depth)
-    crawler.crawl()
-
-
-    with open("results.json", "w", encoding="utf-8") as json_file:
-        json.dump(crawler.results, json_file, indent=4, ensure_ascii=False)
-
-    print("Résultats sauvegardés dans 'results.json'")
-```
+set `mode` à `WebCrawler`
 1. Modifiez le fichier `main.py` pour définir l'URL de base (`base_url`) et les paramètres du crawler, tels que :
    - **Profondeur maximale** (`max_depth`)
    - **Nombre maximal de pages** (`max_pages`)
@@ -85,20 +70,7 @@ def main():
 3. Les résultats seront sauvegardés dans le fichier `results.json` à la racine du répertoire.
 
 ### Cas index
-
-fonction main : 
-```python
-def main():
-    data = Index.load_jsonl("products.jsonl")
-    index = Index(data)
-    index.build_index()
-    index.build_index_features()
-    index.build_index_position()
-    index.build_index_review()
-    index.create_sub_indices()
-
-    index.save_indexes()
-```
+set `mode` à `Index`
 
 ## Structure du projet
 

@@ -153,6 +153,8 @@ class Index:
         for key_feature, tokens_dict in self.index_features.items():
             sub_index_name = f"index_{key_feature}"
             setattr(self, sub_index_name, tokens_dict)
+            if sub_index_name == "index_purpose":
+                print(f"created sub index {tokens_dict}")
 
     def build_index_position(self):
         """
@@ -177,8 +179,8 @@ class Index:
         """
         Save all of the indexes in a json file named after the name of the index.
         """
-        try:
-            for attr_name in dir(self):
+        for attr_name in dir(self):
+            try:
                 if attr_name.startswith("index_"):
                     attr_value = getattr(self, attr_name)
                     if isinstance(attr_value, defaultdict):
@@ -189,6 +191,5 @@ class Index:
 
                     with open(attr_name + ".json", "w", encoding="utf-8") as f:
                         json.dump(attr_value, f, indent=4)
-
-        except Exception:
-            pass
+            except Exception as e:
+                print(e)
