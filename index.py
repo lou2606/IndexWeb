@@ -74,14 +74,12 @@ class Index:
         """
         Simple tokenization with stopwords removal.
         """
-        ww = []
-        with open("stop_words_english.json", "r", encoding="utf-8") as f:
-            for line in f:
-                ww.append(json.loads(line))
+        ww = Index.load_json("stop_words_english.json")
         stopwords = []
         for word in ww:
             stopwords.append(word)
-
+        stopwords = stopwords[0] + list(string.punctuation)
+        stopwords = set(stopwords)
         tokens = text.lower().translate(str.maketrans("", "", string.punctuation)).split()
         return [token for token in tokens if token not in stopwords]
 
