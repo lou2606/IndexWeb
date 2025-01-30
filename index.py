@@ -17,11 +17,11 @@ class Index:
 
     def __str__(self):
         """
-        Affiche chaque index avec son nom et contenu.
+        Print each index with his content
         """
         result = []
         for attr_name in dir(self):
-            if attr_name.startswith("index_features"):
+            if attr_name.startswith("index_"):
                 attr_value = getattr(self, attr_name)
                 result.append(f"{attr_name}:\n{attr_value}\n")
         return "\n".join(result)
@@ -29,7 +29,7 @@ class Index:
     @staticmethod
     def load_jsonl(path):
         """
-        Charge des données JSON Lines à partir d'un fichier.
+        Loads JSON line from a path
         """
         docs = []
         with open(path, "r", encoding="utf-8") as f:
@@ -40,18 +40,7 @@ class Index:
     @staticmethod
     def parse_jsonl(jsonl):
         """
-        Parses a JSONL (JSON Lines) formatted input and extracts URLs from each line.
-
-        This function iterates over the provided JSONL input, which is expected to be an
-        iterable of dictionary-like objects. Each object is assumed to contain a key
-        named "url". The function collects the values of the "url" key from each line and
-        returns them as a list.
-
-        :param jsonl: The iterable containing JSONL formatted data. Each element in
-            the iterable should be a dictionary-like object with a "url" key.
-        :type jsonl: Iterable[Dict[str, Any]]
-        :return: A list of URLs extracted from the JSONL input.
-        :rtype: List[str]
+        Parses a JSONL (JSON Lines) formatted input and extracts URLs from each lines
         """
         urls = []
         for doc in jsonl:
@@ -64,11 +53,6 @@ class Index:
         Extracts the unique identifier from a given URL. This function checks
         if a query string is present in the last segment of the URL. If found,
         it removes the query string to return only the identifier.
-
-        :param url: The URL string from which the identifier is to be extracted.
-        :type url: str
-        :return: The extracted identifier from the last segment of the URL.
-        :rtype: str
         """
         last = url.split("/")[-1]
         if "?" in last:
@@ -79,16 +63,7 @@ class Index:
     @staticmethod
     def extract_variante(url):
         """
-        Extracts the variant identifier from a given URL string. The method assumes
-        the URL contains components separated by slashes and a query parameter
-        introduced by a question mark. It isolates the last segment of the URL,
-        checks for the presence of a query parameter, and extracts the value
-        associated with the parameter.
-
-        :param url: The input URL string from which the variant is to be extracted.
-        :type url: str
-        :return: The extracted variant identifier from the given URL.
-        :rtype: str
+        Extracts the variant identifier from a given URL string.
         """
         last = url.split("/")[-1]
         if "?" in last:
@@ -97,7 +72,7 @@ class Index:
 
     def tokenize(self, text):
         """
-        Tokenization simple basée sur l'espace, suppression de la ponctuation et des stopwords.
+        Simple tokenization with stopwords removal.
         """
         ww = []
         with open("stop_words_english.json", "r", encoding="utf-8") as f:
@@ -112,7 +87,7 @@ class Index:
 
     def build_index(self):
         """
-        Construit les index inversés pour les titres et descriptions.
+        Build indexes for title and description.
         """
         for doc in self.data:
             doc_id = doc["url"]
@@ -129,9 +104,7 @@ class Index:
 
     def build_index_review(self):
         """
-        construit l'index pour les reviews.
-        :param data:
-        :return:
+        Build index for reviews.
         """
 
         for doc in self.data:
@@ -154,6 +127,9 @@ class Index:
                 self.index_review[doc_id].add(last_rating["rating"])
 
     def build_index_features(self):
+        """
+        Build index for features.
+        """
         for doc in self.data:
             doc_id = doc["url"]
             features = doc["product_features"]
@@ -163,11 +139,17 @@ class Index:
                     self.index_features[key_feature][token].add(doc_id)
 
     def create_sub_indices(self):
+        """
+        Build indexes for each features according to index_features.
+        """
         for key_feature, tokens_dict in self.index_features.items():
             sub_index_name = f"index_{key_feature}"
             setattr(self, sub_index_name, tokens_dict)
 
     def build_index_position(self):
+        """
+        Build index of position for title and description.
+        """
         for doc in self.data:
             doc_id = doc["url"]
             title_tokens = self.tokenize(doc["title"])
@@ -184,6 +166,9 @@ class Index:
                 self.index_position_description[token].add((doc_id, position))
 
     def save_indexes(self):
+        """
+        Save all of the indexes in a json file named after the name of the index.
+        """
         try:
             for attr_name in dir(self):
                 if attr_name.startswith("index_"):
