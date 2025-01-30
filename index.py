@@ -38,6 +38,16 @@ class Index:
         return docs
 
     @staticmethod
+    def load_json(path):
+        """
+        Loads JSON line from a path
+        """
+        docs = []
+        with open("stop_words_english.json", "r", encoding="utf-8") as f:
+            for line in f:
+                docs.append(json.loads(line))
+        return docs
+    @staticmethod
     def parse_jsonl(jsonl):
         """
         Parses a JSONL (JSON Lines) formatted input and extracts URLs from each lines
