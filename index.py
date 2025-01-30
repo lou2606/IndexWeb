@@ -154,6 +154,15 @@ class Index:
             sub_index_name = f"index_{key_feature}"
             setattr(self, sub_index_name, tokens_dict)
 
+    def texte(self, text):
+        ww = Index.load_json("stop_words_english.json")
+        stopwords = []
+        for word in ww:
+            stopwords.append(word)
+        stopwords = stopwords[0] + list(string.punctuation)
+        stopwords = set(stopwords)
+        tokens = text.lower().translate(str.maketrans("", "", string.punctuation))
+        return tokens
 
     def build_index_position(self):
         """
@@ -166,7 +175,8 @@ class Index:
 
             title_tokens = self.tokenize(title)
             description_tokens = self.tokenize(description)
-
+            title = self.texte(title)
+            description = self.texte(description)
             title_positions = {}
             current_position = 0
             for token in title_tokens:
