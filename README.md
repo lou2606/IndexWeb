@@ -1,3 +1,4 @@
+
 # IndexWeb
 
 IndexWeb est un projet de scraping et d'indexation de pages web. Il explore des sites web de manière récursive, extrait des informations pertinentes (titre, description, contenu textuel, etc.) et sauvegarde les résultats dans un fichier JSON. 
