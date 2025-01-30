@@ -161,17 +161,33 @@ class Index:
         """
         for doc in self.data:
             doc_id = doc["url"]
-            title_tokens = self.tokenize(doc["title"])
-            description_tokens = self.tokenize(doc["description"])
+            title = doc["title"]
+            description = doc["description"]
 
+            title_tokens = self.tokenize(title)
+            description_tokens = self.tokenize(description)
+
+            title_positions = {}
+            current_position = 0
             for token in title_tokens:
-                title = doc["title"]
-                position =  title.find(token)
+                current_position = title.lower().find(token, current_position)
+                if current_position != -1:
+                    title_positions[token] = current_position
+                    current_position += len(token)
+
+            for token, position in title_positions.items():
                 self.index_position_title[token].add((doc_id, position))
 
+            description_positions = {}
+            current_position = 0
             for token in description_tokens:
-                description = doc["description"]
-                position =  description.find(token)
+                current_position = description.lower().find(token, current_position)
+                if current_position != -1:
+                    description_positions[token] = current_position
+                    current_position += len(token)
+
+            # Ajout des positions dans l'index pour la description
+            for token, position in description_positions.items():
                 self.index_position_description[token].add((doc_id, position))
 
     def save_indexes(self):
